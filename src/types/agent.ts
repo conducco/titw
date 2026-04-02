@@ -45,7 +45,14 @@ export const agentConfigSchema = z.object({
   permissionMode: z.enum(['default', 'plan', 'bubble', 'bypass']).optional(),
   tools: z.array(z.string()).optional(),
   disallowedTools: z.array(z.string()).optional(),
-  mcpServers: z.array(z.union([z.string(), z.record(z.any())])).optional(),
+  mcpServers: z.array(z.union([
+    z.string(),
+    z.record(z.object({
+      command: z.string(),
+      args: z.array(z.string()).optional(),
+      env: z.record(z.string()).optional(),
+    })),
+  ])).optional(),
   memory: z.enum(['user', 'project', 'local']).optional(),
   maxTurns: z.number().int().positive().optional(),
   planModeRequired: z.boolean().optional(),
