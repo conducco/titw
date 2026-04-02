@@ -36,6 +36,16 @@ export class ShutdownNegotiator {
     this.timeoutMs = options.timeoutMs ?? SHUTDOWN_TIMEOUT_MS
   }
 
+  /**
+   * Sends a shutdown request to `toAgent` and polls `fromAgent`'s inbox
+   * for the matching `shutdown_response`.
+   *
+   * Note: On receiving the response, `markAllRead` is called on `fromAgent`'s
+   * inbox. This correctly marks the processed batch as read; only messages that
+   * arrived since the last poll are considered (via `readUnread`), so concurrent
+   * messages from other agents are not affected unless they arrived in the same
+   * poll batch as the response.
+   */
   async requestShutdown(opts: {
     fromAgent: string
     toAgent: string
@@ -51,7 +61,7 @@ export class ShutdownNegotiator {
 
     const deadline = Date.now() + this.timeoutMs
     while (Date.now() < deadline) {
-      const messages = await this.mailbox.readAll(opts.fromAgent)
+      const messages = await this.mailbox.readUnread(opts.fromAgent)
       for (const msg of messages) {
         const parsed = parseStructuredMessage(msg.text)
         if (parsed?.type === 'shutdown_response' && parsed.request_id === request.request_id) {
