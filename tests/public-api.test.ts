@@ -50,4 +50,27 @@ describe('public API surface', () => {
   it('exports FORK_BOILERPLATE_MARKER', () => expect(typeof FORK_BOILERPLATE_MARKER).toBe('string'))
   it('exports ShutdownNegotiator class', () => expect(ShutdownNegotiator).toBeDefined())
   it('exports SHUTDOWN_TIMEOUT_MS', () => expect(SHUTDOWN_TIMEOUT_MS).toBeGreaterThan(0))
+
+  it('exports SkillRegistry', async () => {
+    const { SkillRegistry } = await import('../src/index.js')
+    expect(SkillRegistry).toBeDefined()
+    expect(typeof SkillRegistry.load).toBe('function')
+  })
+
+  it('exports MCPToolkit', async () => {
+    const { MCPToolkit } = await import('../src/index.js')
+    expect(MCPToolkit).toBeDefined()
+    expect(typeof MCPToolkit.connect).toBe('function')
+  })
+
+  it('exports MCPServerConfig type (structural check via agentConfigSchema)', async () => {
+    const { agentConfigSchema } = await import('../src/index.js')
+    const result = agentConfigSchema.safeParse({
+      name: 'a',
+      systemPrompt: 'b',
+      mcpServers: [{ type: 'stdio', command: 'npx' }],
+      skills: ['./my-skill.md'],
+    })
+    expect(result.success).toBe(true)
+  })
 })

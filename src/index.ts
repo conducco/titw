@@ -62,8 +62,12 @@ export type { MailboxOptions, IncomingMessage } from './messaging/Mailbox.js'
 export { AgentMemory } from './memory/AgentMemory.js'
 export type { AgentMemoryOptions } from './memory/AgentMemory.js'
 
+// Skills
+export { SkillRegistry } from './skills/SkillRegistry.js'
+
 // Backends
 export { InProcessBackend } from './backends/InProcessBackend.js'
+export { MCPToolkit } from './backends/MCPToolkit.js'
 export type {
   AgentRunner, AgentRunParams,
   TeammateExecutor, TeammateSpawnConfig, TeammateSpawnResult,
