@@ -1,4 +1,6 @@
 import type { MCPServerConfig, MCPToolSchema } from '../types/agent.js'
+import type { Client as MCPClient } from '@modelcontextprotocol/sdk/client/index.js'
+import type { Transport } from '@modelcontextprotocol/sdk/shared/transport.js'
 export type { MCPToolSchema } from '../types/agent.js'
 
 const RESERVED_TOOL_NAMES = new Set(['send_message'])
@@ -6,12 +8,7 @@ const DEFAULT_TIMEOUT_MS = 10_000
 
 interface ConnectedServer {
   config: MCPServerConfig
-  client: {
-    connect: (transport: unknown) => Promise<void>
-    close: () => Promise<void>
-    listTools: () => Promise<{ tools: Array<{ name: string; description?: string; inputSchema: { type: 'object'; properties?: Record<string, unknown>; required?: string[]; [key: string]: unknown } }> }>
-    callTool: (params: { name: string; arguments: Record<string, unknown> }) => Promise<unknown>
-  }
+  client: MCPClient
   tools: MCPToolSchema[]
 }
 
@@ -31,7 +28,7 @@ export class MCPToolkit {
       const label = config.command ?? config.url ?? 'unknown'
       const client = new Client({ name: 'titw', version: '1.0' }, { capabilities: {} })
 
-      let transport: unknown
+      let transport: Transport
       if (config.type === 'sse') {
         const { SSEClientTransport } = await import('@modelcontextprotocol/sdk/client/sse.js')
         transport = new SSEClientTransport(new URL(config.url!))
@@ -39,8 +36,8 @@ export class MCPToolkit {
         const { StdioClientTransport } = await import('@modelcontextprotocol/sdk/client/stdio.js')
         transport = new StdioClientTransport({
           command: config.command!,
-          args: config.args,
-          env: { ...process.env, ...config.env } as Record<string, string>,
+          ...(config.args !== undefined ? { args: config.args } : {}),
+          ...(config.env !== undefined ? { env: { ...process.env, ...config.env } as Record<string, string> } : {}),
         })
       }
 
@@ -81,8 +78,8 @@ export class MCPToolkit {
         }
         serverTools.push({
           name: raw.name,
-          description: raw.description,
-          inputSchema: raw.inputSchema,
+          ...(raw.description !== undefined ? { description: raw.description } : {}),
+          inputSchema: raw.inputSchema as MCPToolSchema['inputSchema'],
         })
       }
 

@@ -1,5 +1,6 @@
 import type { TeammateMessage } from '../types/message.js'
 import type { AgentConfig } from '../types/agent.js'
+import type { MCPToolSchema } from '../types/agent.js'
 export type { MCPToolSchema } from '../types/agent.js'
 import type { AgentRunResult, AgentProgress } from '../types/task.js'
 import type { TitwConfig } from '../config.js'
