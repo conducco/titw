@@ -1,5 +1,5 @@
 import type { TeammateMessage } from '../types/message.js'
-import type { AgentConfig } from '../types/agent.js'
+import type { AgentConfig, MCPToolSchema } from '../types/agent.js'
 import type { AgentRunResult, AgentProgress } from '../types/task.js'
 import type { TitwConfig } from '../config.js'
 
@@ -17,6 +17,8 @@ export interface AgentRunParams {
   readMailbox: () => Promise<TeammateMessage[]>
   sendMessage: (to: string, message: Omit<TeammateMessage, 'timestamp' | 'read'>) => Promise<void>
   onProgress?: (progress: AgentProgress) => void
+  mcpTools: MCPToolSchema[]
+  callMcpTool: (name: string, args: Record<string, unknown>) => Promise<unknown>
 }
 
 /**
@@ -35,6 +37,8 @@ export interface TeammateSpawnConfig {
   cwd: string
   parentId: string
   runner: AgentRunner
+  mcpTools?: MCPToolSchema[]
+  callMcpTool?: (name: string, args: Record<string, unknown>) => Promise<unknown>
   titwCfg: TitwConfig
   onIdle?: () => void
   onProgress?: (progress: AgentProgress) => void

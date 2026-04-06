@@ -17,6 +17,17 @@ export interface MCPServerConfig {
   timeoutMs?: number    // default 10_000
 }
 
+export interface MCPToolSchema {
+  name: string
+  description?: string
+  inputSchema: {
+    type: 'object'
+    properties?: Record<string, unknown>
+    required?: string[]
+    [key: string]: unknown
+  }
+}
+
 export interface AgentConfig {
   name: string
   systemPrompt: string
