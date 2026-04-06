@@ -3,9 +3,19 @@ import { z } from 'zod'
 export type ModelSpec = string | 'inherit'
 export type PermissionMode = 'default' | 'plan' | 'bubble' | 'bypass'
 export type AgentMemoryScope = 'user' | 'project' | 'local'
-export type AgentMcpServerSpec =
-  | string
-  | { [name: string]: { command: string; args?: string[]; env?: Record<string, string> } }
+
+export interface MCPServerConfig {
+  type: 'stdio' | 'sse'
+  // stdio
+  command?: string
+  args?: string[]
+  env?: Record<string, string>
+  // sse
+  url?: string
+  // behaviour
+  required?: boolean    // default false — spawn fails if connection fails
+  timeoutMs?: number    // default 10_000
+}
 
 export interface AgentConfig {
   name: string
@@ -14,7 +24,8 @@ export interface AgentConfig {
   permissionMode?: PermissionMode
   tools?: string[]
   disallowedTools?: string[]
-  mcpServers?: AgentMcpServerSpec[]
+  mcpServers?: MCPServerConfig[]
+  skills?: string[]
   memory?: AgentMemoryScope
   maxTurns?: number
   planModeRequired?: boolean
@@ -38,6 +49,16 @@ export interface TeamConfig {
   backend?: 'in-process'
 }
 
+const mcpServerConfigSchema = z.object({
+  type: z.enum(['stdio', 'sse']),
+  command: z.string().optional(),
+  args: z.array(z.string()).optional(),
+  env: z.record(z.string()).optional(),
+  url: z.string().optional(),
+  required: z.boolean().optional(),
+  timeoutMs: z.number().int().positive().optional(),
+})
+
 export const agentConfigSchema = z.object({
   name: z.string().min(1, 'Agent name cannot be empty'),
   systemPrompt: z.string().min(1, 'System prompt cannot be empty'),
@@ -45,14 +66,8 @@ export const agentConfigSchema = z.object({
   permissionMode: z.enum(['default', 'plan', 'bubble', 'bypass']).optional(),
   tools: z.array(z.string()).optional(),
   disallowedTools: z.array(z.string()).optional(),
-  mcpServers: z.array(z.union([
-    z.string(),
-    z.record(z.object({
-      command: z.string(),
-      args: z.array(z.string()).optional(),
-      env: z.record(z.string()).optional(),
-    })),
-  ])).optional(),
+  mcpServers: z.array(mcpServerConfigSchema).optional(),
+  skills: z.array(z.string()).optional(),
   memory: z.enum(['user', 'project', 'local']).optional(),
   maxTurns: z.number().int().positive().optional(),
   planModeRequired: z.boolean().optional(),

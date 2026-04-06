@@ -1,6 +1,33 @@
 import { describe, it, expect } from 'vitest'
 import { agentConfigSchema, teamConfigSchema, sanitizeName, formatAgentId, parseAgentId } from '../src/types/agent.js'
 
+it('AgentConfig accepts mcpServers with stdio type', () => {
+  const result = agentConfigSchema.safeParse({
+    name: 'agent',
+    systemPrompt: 'You help.',
+    mcpServers: [{ type: 'stdio', command: 'npx', args: ['-y', '@mcp/server'], required: true }],
+  })
+  expect(result.success).toBe(true)
+})
+
+it('AgentConfig accepts mcpServers with sse type', () => {
+  const result = agentConfigSchema.safeParse({
+    name: 'agent',
+    systemPrompt: 'You help.',
+    mcpServers: [{ type: 'sse', url: 'http://localhost:3000/sse' }],
+  })
+  expect(result.success).toBe(true)
+})
+
+it('AgentConfig accepts skills array', () => {
+  const result = agentConfigSchema.safeParse({
+    name: 'agent',
+    systemPrompt: 'You help.',
+    skills: ['./skills/researcher.md', '@titw/skill-writer'],
+  })
+  expect(result.success).toBe(true)
+})
+
 describe('agentConfigSchema', () => {
   it('requires name and systemPrompt', () => {
     const result = agentConfigSchema.safeParse({ name: 'researcher', systemPrompt: 'You are a researcher.' })
