@@ -58,6 +58,7 @@ export interface TeamConfig {
   defaultModel?: string
   allowedPaths?: TeamAllowedPath[]
   backend?: 'in-process'
+  observerAgent?: string
 }
 
 const mcpServerConfigSchema = z.object({
@@ -101,6 +102,7 @@ export const teamConfigSchema = z
     defaultModel: z.string().optional(),
     allowedPaths: z.array(teamAllowedPathSchema).optional(),
     backend: z.literal('in-process').optional(),
+    observerAgent: z.string().optional(),
   })
   .refine(
     data => data.members.some(m => m.name === data.leadAgentName),

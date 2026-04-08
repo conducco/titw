@@ -101,6 +101,35 @@ describe('parseAgentId', () => {
   })
 })
 
+describe('TeamConfig.observerAgent', () => {
+  const baseTeam = {
+    name: 'my-team',
+    leadAgentName: 'lead',
+    members: [{ name: 'lead', systemPrompt: 'You lead.' }],
+  }
+
+  it('accepts a team without observerAgent', () => {
+    expect(teamConfigSchema.safeParse(baseTeam).success).toBe(true)
+  })
+
+  it('accepts a team with observerAgent set to an existing member name', () => {
+    const team = { ...baseTeam, observerAgent: 'lead' }
+    expect(teamConfigSchema.safeParse(team).success).toBe(true)
+  })
+
+  it('accepts a team with observerAgent set to a non-member name', () => {
+    const team = { ...baseTeam, observerAgent: 'kgc' }
+    expect(teamConfigSchema.safeParse(team).success).toBe(true)
+  })
+
+  it('preserves observerAgent in parsed output', () => {
+    const team = { ...baseTeam, observerAgent: 'kgc' }
+    const result = teamConfigSchema.safeParse(team)
+    expect(result.success).toBe(true)
+    expect((result.data as { observerAgent?: string }).observerAgent).toBe('kgc')
+  })
+})
+
 import type { IMemoryProvider, Triple } from '../src/types/provider.js'
 
 describe('IMemoryProvider structural types', () => {
