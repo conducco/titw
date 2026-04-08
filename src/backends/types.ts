@@ -2,6 +2,8 @@ import type { TeammateMessage } from '../types/message.js'
 import type { AgentConfig } from '../types/agent.js'
 import type { MCPToolSchema } from '../types/agent.js'
 export type { MCPToolSchema } from '../types/agent.js'
+import type { Triple } from '../types/provider.js'
+export type { Triple } from '../types/provider.js'
 import type { AgentRunResult, AgentProgress } from '../types/task.js'
 import type { TitwConfig } from '../config.js'
 
@@ -21,6 +23,7 @@ export interface AgentRunParams {
   onProgress?: (progress: AgentProgress) => void
   mcpTools: MCPToolSchema[]
   callMcpTool: (name: string, args: Record<string, unknown>) => Promise<unknown>
+  writeMemory?: (triples: Triple[]) => Promise<void>
 }
 
 /**
