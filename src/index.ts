@@ -61,6 +61,10 @@ export type { MailboxOptions, IncomingMessage } from './messaging/Mailbox.js'
 // Memory
 export { AgentMemory } from './memory/AgentMemory.js'
 export type { AgentMemoryOptions } from './memory/AgentMemory.js'
+export { FileProvider } from './memory/FileProvider.js'
+export type { FileProviderOptions } from './memory/FileProvider.js'
+export { ObsidianProvider } from './memory/ObsidianProvider.js'
+export type { IMemoryProvider, Triple } from './types/provider.js'
 
 // Skills
 export { SkillRegistry } from './skills/SkillRegistry.js'

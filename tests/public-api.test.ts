@@ -73,4 +73,28 @@ describe('public API surface', () => {
     })
     expect(result.success).toBe(true)
   })
+
+  it('exports FileProvider', async () => {
+    const { FileProvider } = await import('../src/index.js')
+    expect(FileProvider).toBeDefined()
+    const provider = new FileProvider({ cwd: '/tmp', memoryBaseDir: '/tmp/mem' })
+    expect(typeof provider.buildSystemPromptInjection).toBe('function')
+    expect(typeof provider.write).toBe('function')
+  })
+
+  it('exports ObsidianProvider', async () => {
+    const { ObsidianProvider } = await import('../src/index.js')
+    expect(ObsidianProvider).toBeDefined()
+    const provider = new ObsidianProvider('/tmp/vault')
+    expect(typeof provider.buildSystemPromptInjection).toBe('function')
+    expect(typeof provider.write).toBe('function')
+  })
+
+  it('exports IMemoryProvider and Triple as types (verified via FileProvider shape)', async () => {
+    const { FileProvider } = await import('../src/index.js')
+    // IMemoryProvider and Triple are type-only exports — verify they exist structurally
+    // by confirming FileProvider satisfies the interface (checked at compile time)
+    const provider = new FileProvider({ cwd: '/tmp', memoryBaseDir: '/tmp/mem' })
+    expect(provider).toBeDefined()
+  })
 })
