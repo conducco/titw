@@ -4,6 +4,8 @@ import { tmpdir } from 'os'
 import { join } from 'path'
 import { AgentMemory } from '../src/memory/AgentMemory.js'
 import { FileProvider } from '../src/memory/FileProvider.js'
+import { ObsidianProvider } from '../src/memory/ObsidianProvider.js'
+import { readFileSync } from 'fs'
 import type { Triple } from '../src/types/provider.js'
 
 let tempDir: string
@@ -121,5 +123,64 @@ describe('FileProvider', () => {
     await provider.write('researcher', 'local', [{ subject: 'X', predicate: 'is', object: 'Y' }])
     const content = await memory.read('local')
     expect(content).toContain('- X is Y')
+  })
+})
+
+describe('ObsidianProvider', () => {
+  let vaultDir: string
+
+  beforeEach(() => {
+    vaultDir = join(tempDir, 'vault')
+  })
+
+  it('write creates one note per subject under scope subdirectory', async () => {
+    const provider = new ObsidianProvider(vaultDir)
+    const triples: Triple[] = [
+      { subject: 'Alice', predicate: 'manages', object: 'ProjectAlpha' },
+      { subject: 'Alice', predicate: 'reports-to', object: 'CEO' },
+    ]
+    await provider.write('researcher', 'project', triples)
+
+    const alicePath = join(vaultDir, 'project', 'Alice.md')
+    expect(existsSync(alicePath)).toBe(true)
+    const content = readFileSync(alicePath, 'utf-8')
+    expect(content).toContain('- manages: [[ProjectAlpha]]')
+    expect(content).toContain('- reports-to: [[CEO]]')
+  })
+
+  it('write creates separate notes for different subjects', async () => {
+    const provider = new ObsidianProvider(vaultDir)
+    await provider.write('researcher', 'project', [
+      { subject: 'Alice', predicate: 'manages', object: 'Project' },
+      { subject: 'Bob', predicate: 'owns', object: 'Service' },
+    ])
+    expect(existsSync(join(vaultDir, 'project', 'Alice.md'))).toBe(true)
+    expect(existsSync(join(vaultDir, 'project', 'Bob.md'))).toBe(true)
+  })
+
+  it('write includes weight as HTML comment when provided', async () => {
+    const provider = new ObsidianProvider(vaultDir)
+    await provider.write('researcher', 'project', [
+      { subject: 'Alice', predicate: 'manages', object: 'Project', weight: 0.8 },
+    ])
+    const content = readFileSync(join(vaultDir, 'project', 'Alice.md'), 'utf-8')
+    expect(content).toContain('<!-- weight: 0.8 -->')
+  })
+
+  it('buildSystemPromptInjection returns empty string when vault scope dir is empty', async () => {
+    const provider = new ObsidianProvider(vaultDir)
+    const result = await provider.buildSystemPromptInjection('researcher', 'project')
+    expect(result).toBe('')
+  })
+
+  it('buildSystemPromptInjection returns wrapped content from all notes in scope', async () => {
+    const provider = new ObsidianProvider(vaultDir)
+    await provider.write('researcher', 'project', [
+      { subject: 'Alice', predicate: 'manages', object: 'Project' },
+    ])
+    const result = await provider.buildSystemPromptInjection('researcher', 'project')
+    expect(result).toContain('<agent-memory scope="project">')
+    expect(result).toContain('[[Project]]')
+    expect(result).toContain('</agent-memory>')
   })
 })
