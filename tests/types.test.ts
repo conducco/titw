@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { agentConfigSchema, teamConfigSchema, sanitizeName, formatAgentId, parseAgentId } from '../src/types/agent.js'
+import type { IMemoryProvider, Triple } from '../src/types/provider.js'
 
 it('AgentConfig accepts mcpServers with stdio type', () => {
   const result = agentConfigSchema.safeParse({
@@ -129,8 +130,6 @@ describe('TeamConfig.observerAgent', () => {
     expect((result.data as { observerAgent?: string }).observerAgent).toBe('kgc')
   })
 })
-
-import type { IMemoryProvider, Triple } from '../src/types/provider.js'
 
 describe('IMemoryProvider structural types', () => {
   it('Triple allows weight to be optional', () => {
