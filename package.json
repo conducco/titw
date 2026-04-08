@@ -9,6 +9,12 @@
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
+    },
+    "./falkor": {
+      "import": "./dist/memory/falkor/index.js",
+      "require": "./dist/memory/falkor/index.js",
+      "types": "./dist/memory/falkor/index.d.ts",
+      "default": "./dist/memory/falkor/index.js"
     }
   },
   "main": "./dist/index.js",
@@ -26,6 +32,14 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
     "zod": "^3.23.0"
+  },
+  "peerDependencies": {
+    "falkordb": ">=4.0.0"
+  },
+  "peerDependenciesMeta": {
+    "falkordb": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
