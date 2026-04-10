@@ -15,6 +15,12 @@
       "require": "./dist/memory/falkor/index.js",
       "types": "./dist/memory/falkor/index.d.ts",
       "default": "./dist/memory/falkor/index.js"
+    },
+    "./mcp-clickup": {
+      "import": "./dist/mcp/clickup/index.js",
+      "require": "./dist/mcp/clickup/index.js",
+      "types": "./dist/mcp/clickup/index.d.ts",
+      "default": "./dist/mcp/clickup/index.js"
     }
   },
   "main": "./dist/index.js",
