@@ -1,13 +1,20 @@
 export interface AzureFoundryOptions {
   /**
    * The endpoint URL copied from the Azure AI Foundry portal ("Target URI").
-   * Example: https://my-resource.services.ai.azure.com/models
-   * The Anthropic SDK appends /v1/messages to this base URL.
+   *
+   * Claude (Anthropic SDK) example:
+   *   https://my-resource.services.ai.azure.com/models
+   *
+   * DeepSeek (OpenAI SDK) example:
+   *   https://my-resource.services.ai.azure.com/api/projects/my-project
+   *
+   * Pass the Target URI exactly as shown in the portal.
+   * The SDK you use appends its own path suffix (e.g. /v1/messages or /chat/completions).
    */
   endpoint: string
   /**
    * The Azure AI API key ("Project API Key") from the Foundry portal.
-   * Azure requires this as an `api-key` header, not `x-api-key`.
+   * Azure requires this as an `api-key` header, not `x-api-key` or `Authorization: Bearer`.
    */
   apiKey: string
 }
@@ -19,13 +26,15 @@ export interface AzureFoundryClientConfig {
 }
 
 /**
- * Returns the Anthropic SDK constructor config for an Azure AI Foundry endpoint.
+ * Returns an SDK constructor config object for an Azure AI Foundry endpoint.
  *
- * Azure AI Foundry expects an `api-key` header, but the Anthropic SDK sends
- * `x-api-key` by default — causing a 401. This function returns a config object
- * that overrides the header correctly.
+ * Azure AI Foundry expects an `api-key` header. The Anthropic SDK sends
+ * `x-api-key` by default, and the OpenAI SDK sends `Authorization: Bearer`
+ * — both cause a 401. This function returns a plain config object
+ * `{ baseURL, apiKey, defaultHeaders }` that can be spread into either
+ * `new Anthropic({...})` or `new OpenAI({...})` to fix the header.
  *
- * @example
+ * @example Anthropic SDK (Claude models)
  * ```ts
  * import Anthropic from '@anthropic-ai/sdk'
  * import { buildAzureFoundryClientConfig } from '@conducco/titw'
@@ -33,6 +42,17 @@ export interface AzureFoundryClientConfig {
  * const client = new Anthropic(buildAzureFoundryClientConfig({
  *   endpoint: process.env.AZURE_AI_ENDPOINT!,
  *   apiKey:   process.env.AZURE_AI_API_KEY!,
+ * }))
+ * ```
+ *
+ * @example OpenAI SDK (DeepSeek and other OpenAI-compatible models)
+ * ```ts
+ * import OpenAI from 'openai'
+ * import { buildAzureFoundryClientConfig } from '@conducco/titw'
+ *
+ * const client = new OpenAI(buildAzureFoundryClientConfig({
+ *   endpoint: process.env.AZURE_AI_DEEPSEEK_ENDPOINT!,
+ *   apiKey:   process.env.AZURE_AI_DEEPSEEK_KEY!,
  * }))
  * ```
  */

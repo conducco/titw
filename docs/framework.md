@@ -766,7 +766,7 @@ ObsidianProvider              // Obsidian vault, one note per entity with wikili
 // FalkorProvider              — import from '@conducco/titw/falkor' (optional peer: falkordb)
 
 // Providers — LLM client configuration helpers
-buildAzureFoundryClientConfig() // Anthropic SDK config for Azure AI Foundry (api-key header fix)
+buildAzureFoundryClientConfig() // Azure AI Foundry config — works with Anthropic and OpenAI SDKs (api-key header fix)
 AzureFoundryClientConfig        // { baseURL, apiKey, defaultHeaders }
 AzureFoundryOptions             // { endpoint, apiKey }
 
