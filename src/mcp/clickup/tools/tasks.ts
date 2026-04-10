@@ -64,9 +64,8 @@ export async function addTag(
   client: ClickUpClient,
   task_id: string,
   tag_name: string,
-): Promise<unknown> {
-  // ClickUp add-tag endpoint takes no body — we send {} which is ignored
-  return client.post(`/task/${task_id}/tag/${tag_name}`, {})
+): Promise<void> {
+  return client.postEmpty(`/task/${task_id}/tag/${tag_name}`)
 }
 
 export async function removeTag(

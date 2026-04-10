@@ -16,6 +16,7 @@ function mockClient(overrides: Partial<ClickUpClient> = {}): ClickUpClient {
     post: vi.fn().mockResolvedValue({}),
     put: vi.fn().mockResolvedValue({}),
     delete: vi.fn().mockResolvedValue(undefined),
+    postEmpty: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   } as unknown as ClickUpClient
 }
@@ -65,11 +66,11 @@ describe('task tools', () => {
     expect(result).toBeUndefined()
   })
 
-  it('addTag calls POST /task/:id/tag/:name', async () => {
-    const client = mockClient({ post: vi.fn().mockResolvedValue({}) })
+  it('addTag calls POST /task/:id/tag/:name with no body', async () => {
+    const client = mockClient()
     const result = await addTag(client, 'task1', 'ready')
-    expect(client.post).toHaveBeenCalledWith('/task/task1/tag/ready', {})
-    expect(result).toEqual({})
+    expect(client.postEmpty).toHaveBeenCalledWith('/task/task1/tag/ready')
+    expect(result).toBeUndefined()
   })
 
   it('removeTag calls DELETE /task/:id/tag/:name', async () => {

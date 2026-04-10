@@ -77,6 +77,15 @@ export class ClickUpClient {
     if (!response.ok) await this.handleError(response)
   }
 
+  async postEmpty(path: string): Promise<void> {
+    // For endpoints that return an empty body (e.g. add-tag)
+    const response = await fetch(`${this.baseUrl}${path}`, {
+      method: 'POST',
+      headers: this.headers(),
+    })
+    if (!response.ok) await this.handleError(response)
+  }
+
   async postFormData<T>(path: string, formData: FormData): Promise<T> {
     // Do NOT set Content-Type — fetch sets it with the multipart boundary automatically
     const response = await fetch(`${this.baseUrl}${path}`, {

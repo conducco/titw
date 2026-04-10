@@ -93,4 +93,13 @@ describe('ClickUpClient', () => {
     expect(headers['Content-Type']).toBeUndefined()
     expect(headers['Authorization']).toBe('pk_test_token')
   })
+
+  it('postEmpty sends POST with no body and resolves void', async () => {
+    mockFetch.mockReturnValueOnce(Promise.resolve(new Response(null, { status: 200 })))
+    await expect(client.postEmpty('/task/1/tag/ready')).resolves.toBeUndefined()
+    expect(mockFetch).toHaveBeenCalledWith(
+      'https://api.clickup.com/api/v2/task/1/tag/ready',
+      expect.objectContaining({ method: 'POST' }),
+    )
+  })
 })
