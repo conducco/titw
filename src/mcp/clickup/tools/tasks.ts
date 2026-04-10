@@ -161,7 +161,10 @@ export function registerTaskTools(server: McpServer, client: ClickUpClient): voi
       task_id: z.string().describe('Task ID'),
       tag_name: z.string().describe('Tag name to add (e.g. "ready")'),
     }),
-  }, async ({ task_id, tag_name }) => text(await addTag(client, task_id, tag_name)))
+  }, async ({ task_id, tag_name }) => {
+    await addTag(client, task_id, tag_name)
+    return text({ added: true, task_id, tag_name })
+  })
 
   server.registerTool('remove_tag', {
     description: 'Remove a tag from a ClickUp task by name.',
