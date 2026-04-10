@@ -836,6 +836,22 @@ for (const call of toolCalls) {
 
 The `params.model` value comes directly from your `TeamConfig` — set it to whatever your provider expects.
 
+**Azure AI Foundry example** — keep the same `@anthropic-ai/sdk` and tool schema, just swap the client config:
+
+```ts
+import Anthropic from '@anthropic-ai/sdk'
+import { buildAzureFoundryClientConfig } from '@conducco/titw'
+
+const client = new Anthropic(buildAzureFoundryClientConfig({
+  endpoint: process.env.AZURE_AI_ENDPOINT!,   // Target URI from Foundry portal
+  apiKey:   process.env.AZURE_AI_API_KEY!,    // Project API Key from Foundry portal
+}))
+```
+
+The `TOOLS` definition, message loop, tool dispatch, and retry logic from Step 2 are **unchanged**. Set `defaultModel` in your `TeamConfig` to the **Foundry deployment name** (not the underlying model identifier).
+
+See `docs/runner-azure-foundry.md` for the full provisioning walkthrough and common issues.
+
 ---
 
 ## What to build next

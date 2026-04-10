@@ -765,6 +765,11 @@ FileProvider                  // markdown files (same paths as AgentMemory)
 ObsidianProvider              // Obsidian vault, one note per entity with wikilinks
 // FalkorProvider              — import from '@conducco/titw/falkor' (optional peer: falkordb)
 
+// Providers — LLM client configuration helpers
+buildAzureFoundryClientConfig() // Anthropic SDK config for Azure AI Foundry (api-key header fix)
+AzureFoundryClientConfig        // { baseURL, apiKey, defaultHeaders }
+AzureFoundryOptions             // { endpoint, apiKey }
+
 // Skills
 SkillRegistry                 // markdown skill loader
 
