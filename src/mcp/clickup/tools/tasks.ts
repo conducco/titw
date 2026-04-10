@@ -98,7 +98,16 @@ export function registerTaskTools(server: McpServer, client: ClickUpClient): voi
       assignees: z.array(z.number().int()).optional().describe('Array of user IDs to assign'),
       tags: z.array(z.string()).optional().describe('Array of tag names'),
     }),
-  }, async ({ list_id, ...data }) => text(await createTask(client, list_id, data)))
+  }, async ({ list_id, name, description, status, priority, due_date, assignees, tags }) => {
+    const data: { name: string; description?: string; status?: string; priority?: number; due_date?: number; assignees?: number[]; tags?: string[] } = { name }
+    if (description !== undefined) data.description = description
+    if (status !== undefined) data.status = status
+    if (priority !== undefined) data.priority = priority
+    if (due_date !== undefined) data.due_date = due_date
+    if (assignees !== undefined) data.assignees = assignees
+    if (tags !== undefined) data.tags = tags
+    return text(await createTask(client, list_id, data))
+  })
 
   server.registerTool('update_task', {
     description: 'Update an existing ClickUp task.',
@@ -110,7 +119,15 @@ export function registerTaskTools(server: McpServer, client: ClickUpClient): voi
       priority: z.number().int().min(1).max(4).optional().describe('1=urgent 2=high 3=normal 4=low'),
       due_date: z.number().int().optional().describe('New due date as Unix timestamp in milliseconds'),
     }),
-  }, async ({ task_id, ...data }) => text(await updateTask(client, task_id, data)))
+  }, async ({ task_id, name, description, status, priority, due_date }) => {
+    const data: { name?: string; description?: string; status?: string; priority?: number; due_date?: number } = {}
+    if (name !== undefined) data.name = name
+    if (description !== undefined) data.description = description
+    if (status !== undefined) data.status = status
+    if (priority !== undefined) data.priority = priority
+    if (due_date !== undefined) data.due_date = due_date
+    return text(await updateTask(client, task_id, data))
+  })
 
   server.registerTool('delete_task', {
     description: 'Permanently delete a ClickUp task.',

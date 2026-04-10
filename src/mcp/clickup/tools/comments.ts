@@ -50,7 +50,12 @@ export function registerCommentTools(server: McpServer, client: ClickUpClient): 
       assignee: z.number().int().optional().describe('User ID to assign the comment to'),
       notify_all: z.boolean().optional().default(false).describe('Notify all assignees'),
     }),
-  }, async ({ task_id, ...data }) => text(await createComment(client, task_id, data)))
+  }, async ({ task_id, comment_text, assignee, notify_all }) => {
+    const data: { comment_text: string; assignee?: number; notify_all?: boolean } = { comment_text }
+    if (assignee !== undefined) data.assignee = assignee
+    if (notify_all !== undefined) data.notify_all = notify_all
+    return text(await createComment(client, task_id, data))
+  })
 
   server.registerTool('update_comment', {
     description: 'Update an existing ClickUp comment.',
@@ -59,7 +64,11 @@ export function registerCommentTools(server: McpServer, client: ClickUpClient): 
       comment_text: z.string().describe('New comment text'),
       resolved: z.boolean().optional().describe('Mark the comment as resolved/unresolved'),
     }),
-  }, async ({ comment_id, ...data }) => text(await updateComment(client, comment_id, data)))
+  }, async ({ comment_id, comment_text, resolved }) => {
+    const data: { comment_text: string; resolved?: boolean } = { comment_text }
+    if (resolved !== undefined) data.resolved = resolved
+    return text(await updateComment(client, comment_id, data))
+  })
 
   server.registerTool('delete_comment', {
     description: 'Delete a ClickUp comment.',

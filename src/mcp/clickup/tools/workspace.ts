@@ -73,9 +73,10 @@ export function registerWorkspaceTools(server: McpServer, client: ClickUpClient)
       space_id: z.string().optional().describe('Space ID for folderless lists (mutually exclusive with folder_id)'),
       archived: z.boolean().optional().default(false).describe('Include archived lists'),
     }),
-  }, async (input) => text(await listLists(client, {
-    folder_id: input.folder_id,
-    space_id: input.space_id,
-    archived: input.archived,
-  })))
+  }, async (input) => {
+    const listInput: { folder_id?: string; space_id?: string; archived: boolean } = { archived: input.archived }
+    if (input.folder_id !== undefined) listInput.folder_id = input.folder_id
+    if (input.space_id !== undefined) listInput.space_id = input.space_id
+    return text(await listLists(client, listInput))
+  })
 }
