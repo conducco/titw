@@ -852,6 +852,22 @@ The `TOOLS` definition, message loop, tool dispatch, and retry logic from Step 2
 
 See `docs/runner-azure-foundry.md` for the full provisioning walkthrough and common issues.
 
+**DeepSeek on Azure AI Foundry example** — same helper, but use the OpenAI SDK. DeepSeek's endpoint path (`/api/projects/...`) is different from Claude's — just pass your Target URI:
+
+```ts
+import OpenAI from 'openai'
+import { buildAzureFoundryClientConfig } from '@conducco/titw'
+
+const client = new OpenAI(buildAzureFoundryClientConfig({
+  endpoint: process.env.AZURE_AI_DEEPSEEK_ENDPOINT!,
+  apiKey:   process.env.AZURE_AI_DEEPSEEK_KEY!,
+}))
+```
+
+The `TOOLS` format and message loop must use the OpenAI-compatible format (`chat.completions.create`, `role: 'tool'` results). Set `defaultModel` in your `TeamConfig` to the **deployment name**.
+
+See `docs/runner-deepseek-foundry.md` for the full provisioning walkthrough and common issues.
+
 ---
 
 ## What to build next
