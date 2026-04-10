@@ -55,7 +55,11 @@ describe('ClickUpClient', () => {
     await client.put('/task/1', { status: 'done' })
     expect(mockFetch).toHaveBeenCalledWith(
       'https://api.clickup.com/api/v2/task/1',
-      expect.objectContaining({ method: 'PUT' }),
+      expect.objectContaining({
+        method: 'PUT',
+        body: JSON.stringify({ status: 'done' }),
+        headers: expect.objectContaining({ 'Content-Type': 'application/json' }),
+      }),
     )
   })
 
@@ -71,13 +75,22 @@ describe('ClickUpClient', () => {
 
   it('ClickUpError carries status and message', async () => {
     mockFetch.mockReturnValueOnce(errJson(401, { err: 'Token invalid', ECODE: 'OAUTH_014' }))
-    try {
-      await client.get('/task/1')
-    } catch (e) {
-      expect(e).toBeInstanceOf(ClickUpError)
-      const err = e as ClickUpError
-      expect(err.status).toBe(401)
-      expect(err.message).toContain('Token invalid')
-    }
+    const promise = client.get('/task/1')
+    await expect(promise).rejects.toBeInstanceOf(ClickUpError)
+    const err = await promise.catch((e: unknown) => e) as ClickUpError
+    expect(err.status).toBe(401)
+    expect(err.message).toContain('Token invalid')
+    expect(err.code).toBe('OAUTH_014')
+  })
+
+  it('postFormData does not set Content-Type header', async () => {
+    mockFetch.mockReturnValueOnce(okJson({ id: '1' }))
+    const formData = new FormData()
+    formData.append('file', new Blob(['hello'], { type: 'text/plain' }), 'hello.txt')
+    await client.postFormData('/task/1/attachment', formData)
+    const [, init] = mockFetch.mock.calls[0] as [string, RequestInit]
+    const headers = init.headers as Record<string, string>
+    expect(headers['Content-Type']).toBeUndefined()
+    expect(headers['Authorization']).toBe('pk_test_token')
   })
 })
