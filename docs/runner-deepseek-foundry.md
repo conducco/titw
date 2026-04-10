@@ -132,7 +132,7 @@ if (message.tool_calls && message.tool_calls.length > 0) {
 }
 ```
 
-The full pattern (TOOLS definition, message loop, retry logic) is covered in `docs/tutorial.md` Step 2 under "Swapping providers — OpenAI example".
+The full pattern (TOOLS definition, message loop, retry logic) is covered in `docs/tutorial.md` under the `## Swapping providers` section (OpenAI example).
 
 ---
 
@@ -189,4 +189,4 @@ Not all DeepSeek versions are listed in every Azure region. Check the current ca
 
 ## Using with Azure Container Apps deployment
 
-If you are deploying titw to Azure Container Apps (see `docs/deployment-azure-container-apps.md`), store `AZURE_AI_DEEPSEEK_ENDPOINT` and `AZURE_AI_DEEPSEEK_KEY` in Key Vault and inject them into the Container Apps Job as secrets — same pattern as `ANTHROPIC_API_KEY` in that guide.
+If you are deploying titw to Azure Container Apps (see `docs/deployment-azure-container-apps.md`), store `AZURE_AI_DEEPSEEK_ENDPOINT` and `AZURE_AI_DEEPSEEK_KEY` in Key Vault and inject them into the Container Apps Job as secrets — replacing the `AZURE_AI_ENDPOINT` / `AZURE_AI_API_KEY` values shown in that guide's Step 3.
